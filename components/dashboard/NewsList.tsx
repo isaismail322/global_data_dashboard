@@ -12,6 +12,7 @@ export default function NewsList({ initialNews }: Props) {
   const [news, setNews] = useState<NewsData[]>(initialNews);
 
   useEffect(() => {
+    let mounted = true;
     const channel = supabase
       .channel("public:news_data")
       .on(
@@ -19,12 +20,43 @@ export default function NewsList({ initialNews }: Props) {
         { event: "INSERT", schema: "public", table: "news_data" },
         (payload) => {
           const record = payload.new as NewsData;
+          console.debug("news realtime insert", record);
+          if (!mounted) return;
           setNews((prev) => [record, ...prev].slice(0, 20));
         }
       )
       .subscribe();
 
-    return () => supabase.removeChannel(channel);
+    // polling fallback: refetch every 15s in case realtime misses events
+    const poll = setInterval(async () => {
+      try {
+        const { data, error } = await supabase
+          .from<NewsData>("news_data")
+          .select("*")
+          .order("published_at", { ascending: false })
+          .limit(20);
+        if (error) {
+          console.debug("news polling error", error);
+          return;
+        }
+        if (!mounted || !data) return;
+        setNews((prev) => {
+          // simple replace if different length or newest id differs
+          if (data.length !== prev.length || (data[0] && prev[0] && data[0].id !== prev[0].id)) {
+            return data as NewsData[];
+          }
+          return prev;
+        });
+      } catch (e) {
+        console.debug("news polling failed", e);
+      }
+    }, 15000);
+
+    return () => {
+      mounted = false;
+      clearInterval(poll);
+      supabase.removeChannel(channel);
+    };
   }, []);
 
   return (

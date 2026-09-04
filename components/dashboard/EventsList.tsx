@@ -15,6 +15,7 @@ export default function EventsList({ initialEvents }: Props) {
   const [modalEvent, setModalEvent] = useState<GlobalEvent | null>(null);
 
   useEffect(() => {
+    let mounted = true;
     const channel = supabase
       .channel("public:global_events")
       .on(
@@ -23,6 +24,9 @@ export default function EventsList({ initialEvents }: Props) {
         (payload) => {
           const kind = payload.event;
           const record = payload.new as GlobalEvent | null;
+          console.debug("global_events realtime", kind, record ?? payload.old);
+
+          if (!mounted) return;
 
           if (kind === "INSERT" && record) {
             setEvents((p) => [record, ...p].slice(0, 20));
@@ -40,7 +44,35 @@ export default function EventsList({ initialEvents }: Props) {
       )
       .subscribe();
 
-    return () => supabase.removeChannel(channel);
+    // polling fallback: refetch every 20s in case realtime missed changes
+    const poll = setInterval(async () => {
+      try {
+        const { data, error } = await supabase
+          .from<GlobalEvent>("global_events")
+          .select("*")
+          .order("created_at", { ascending: false })
+          .limit(20);
+        if (error) {
+          console.debug("events polling error", error);
+          return;
+        }
+        if (!mounted || !data) return;
+        setEvents((prev) => {
+          if (data.length !== prev.length || (data[0] && prev[0] && data[0].event_id !== prev[0].event_id)) {
+            return data as GlobalEvent[];
+          }
+          return prev;
+        });
+      } catch (e) {
+        console.debug("events polling failed", e);
+      }
+    }, 20000);
+
+    return () => {
+      mounted = false;
+      clearInterval(poll);
+      supabase.removeChannel(channel);
+    };
   }, []);
 
   return (
