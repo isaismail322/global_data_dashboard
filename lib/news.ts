@@ -1,18 +1,17 @@
 import { supabase } from "./supabase";
-import { News } from "@/types/news";
+import { NewsData } from "@/types/news";
 
-export async function getLatestNews(): Promise<News[]> {
-
+export async function getLatestNews(limit = 20): Promise<NewsData[]> {
   const { data, error } = await supabase
-    .from("news")
+    .from("news_data")
     .select("*")
-    .order("created_at", { ascending: false })
-    .limit(20);
+    .order("published_at", { ascending: false })
+    .limit(limit);
 
   if (error) {
     console.error("News query failed:", error);
     throw error;
   }
 
-  return data ?? [];
+  return (data as NewsData[]) ?? [];
 }
