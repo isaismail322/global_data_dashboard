@@ -179,7 +179,7 @@ export default function EventsMap({ events, highlightedEventId }: Props) {
   }, [events, highlightedEventId]);
 
   return (
-    <div style={{ width: "100%", height: 300, borderRadius: 8, overflow: "hidden", position: 'relative' }}>
+    <div style={{ width: "100%", height: 450, borderRadius: 8, overflow: "hidden", position: 'relative' }}>
       <div ref={ref} style={{ width: '100%', height: '100%' }} />
       {!mapAvailable && (
         <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#94a3b8', pointerEvents: 'none' }}>

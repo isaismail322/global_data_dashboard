@@ -97,9 +97,9 @@ export default function EventsList({ initialEvents }: Props) {
       </div>
 
       {modalEvent && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center">
-          <div className="absolute inset-0 bg-black/60" onClick={() => setModalEvent(null)} />
-          <div className="relative z-10 max-w-3xl w-full max-h-[80vh] overflow-auto rounded-lg bg-slate-900 border border-slate-800 p-6">
+        <div className="fixed inset-0 z-[100000] flex items-center justify-center">
+          <div className="absolute inset-0 bg-black/60 z-[100000]" onClick={() => setModalEvent(null)} />
+          <div className="relative z-[100001] max-w-3xl w-full max-h-[80vh] overflow-auto rounded-lg bg-slate-900 border border-slate-800 p-6">
             <div className="flex items-start justify-between">
               <h4 className="text-xl font-semibold">{modalEvent.event_name ?? modalEvent.name}</h4>
               <button className="text-slate-400" onClick={() => setModalEvent(null)}>Close</button>
