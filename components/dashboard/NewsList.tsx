@@ -28,10 +28,10 @@ export default function NewsList({ initialNews }: Props) {
   }, []);
 
   return (
-    <div className="rounded-xl border border-slate-800 bg-slate-900 p-4">
+    <div className="rounded-xl border border-slate-800 bg-slate-900 p-4 h-full flex flex-col">
       <h3 className="mb-3 text-lg font-semibold">Latest News</h3>
 
-      <ul className="space-y-3 max-h-72 overflow-auto">
+      <ul className="space-y-3 overflow-auto flex-1">
         {news.map((n) => (
           <li key={n.id} className="rounded-md border border-slate-800 bg-slate-950 p-3">
             <a href={n.url ?? "#"} target="_blank" rel="noreferrer" className="text-sm font-medium">

@@ -59,7 +59,7 @@ export default function MarketChart({ symbol }: Props) {
 
         chartRef.current = lwc.createChart(ref.current, {
           width: ref.current.clientWidth,
-          height: 400,
+          height: ref.current.clientHeight || 400,
           layout: { backgroundColor: "#0f1724", textColor: "#d1d5db" },
           grid: { vertLines: { color: "#374151" }, horzLines: { color: "#374151" } },
         });
@@ -99,7 +99,7 @@ export default function MarketChart({ symbol }: Props) {
 
         const handleResize = () => {
           if (!ref.current || !chartRef.current) return;
-          chartRef.current.applyOptions({ width: ref.current.clientWidth });
+          chartRef.current.applyOptions({ width: ref.current.clientWidth, height: ref.current.clientHeight });
         };
         window.addEventListener("resize", handleResize);
 
@@ -138,11 +138,11 @@ export default function MarketChart({ symbol }: Props) {
     const padding = (max - min) * 0.1 || Math.max(1, max * 0.05);
 
     return (
-      <div className="rounded-xl border border-slate-800 bg-slate-900 p-5">
+      <div className="rounded-xl border border-slate-800 bg-slate-900 p-5 h-full flex flex-col">
         <h2 className="mb-2 text-lg font-semibold">{symbol} — Price (fallback)</h2>
         <div className="text-xs text-slate-400 mb-3">Showing {plotData.length} points — install "lightweight-charts" for candlestick view</div>
 
-        <div style={{ width: "100%", height: 400 }}>
+        <div className="w-full h-full overflow-hidden">
           {plotData.length === 0 ? (
             <div className="text-sm text-slate-400">No historical data available</div>
           ) : (
@@ -162,9 +162,9 @@ export default function MarketChart({ symbol }: Props) {
   }
 
   return (
-    <div className="rounded-xl border border-slate-800 bg-slate-900 p-5">
+    <div className="rounded-xl border border-slate-800 bg-slate-900 p-5 h-full flex flex-col">
       <h2 className="mb-5 text-lg font-semibold">{symbol} — Candlestick</h2>
-      <div ref={ref} style={{ width: "100%", height: 400 }} />
+      <div ref={ref} className="w-full h-full" />
     </div>
   );
 }

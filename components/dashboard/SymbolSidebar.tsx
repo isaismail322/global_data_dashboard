@@ -43,28 +43,31 @@ export default function SymbolSidebar({ initial, symbols, selected, onSelect }: 
   const rows = Object.values(map);
 
   return (
-    <aside className="w-56 rounded-xl border border-slate-800 bg-slate-900 p-4">
+    <aside className="w-full h-full rounded-xl border border-slate-800 bg-slate-900 p-4 flex flex-col">
       <h4 className="mb-3 text-sm font-semibold">Watchlist</h4>
-      <ul className="space-y-2">
-        {symbols.map((s) => {
-          const m = map[s];
-          const price = m?.close ?? 0;
-          return (
-            <li key={s}>
-              <button
-                onClick={() => onSelect(s)}
-                className={`w-full text-left rounded-md p-2 ${selected === s ? "bg-slate-800" : "bg-slate-950"} border border-slate-800`}
-              >
-                <div className="flex items-center justify-between">
-                  <div className="text-sm font-medium">{s}</div>
-                  <div className="text-sm font-semibold">${price.toFixed(2)}</div>
-                </div>
-                <div className="mt-1 text-xs text-slate-400">{new Date(m?.timestamp ?? Date.now()).toLocaleTimeString()}</div>
-              </button>
-            </li>
-          );
-        })}
-      </ul>
+
+      <div className="overflow-auto flex-1">
+        <ul className="space-y-2">
+          {symbols.map((s) => {
+            const m = map[s];
+            const price = m?.close ?? 0;
+            return (
+              <li key={s}>
+                <button
+                  onClick={() => onSelect(s)}
+                  className={`w-full text-left rounded-md p-2 ${selected === s ? "bg-slate-800" : "bg-slate-950"} border border-slate-800`}
+                >
+                  <div className="flex items-center justify-between">
+                    <div className="text-sm font-medium">{s}</div>
+                    <div className="text-sm font-semibold">${price.toFixed(2)}</div>
+                  </div>
+                  <div className="mt-1 text-xs text-slate-400">{new Date(m?.timestamp ?? Date.now()).toLocaleTimeString()}</div>
+                </button>
+              </li>
+            );
+          })}
+        </ul>
+      </div>
     </aside>
   );
 }
